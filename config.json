@@ -1,0 +1,9 @@
+{
+  "Output": "C:\\Users\\Shaun Mitchell\\PycharmProjects\\MnistGan\\output",
+  "TrainingCheckpoints": "C:\\Users\\Shaun Mitchell\\PycharmProjects\\MnistGan\\training_checkpoints",
+  "Epochs": 3,
+  "BatchSize": 256,
+  "BufferSize": 60000,
+  "NoiseDim": 100,
+  "NumExamplesToGenerate": 16
+}
