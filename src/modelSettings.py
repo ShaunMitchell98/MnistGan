@@ -1,9 +1,11 @@
 
 class ModelSettings:
 
-    def __init__(self, epochs, batchSize, bufferSize, noiseDim, numExamplesToGenerate):
-        self.epochs = epochs
-        self.batchSize = batchSize
-        self.bufferSize = bufferSize
-        self.noiseDim =  noiseDim
-        self.numExamplesToGenerate = numExamplesToGenerate
+    def __init__(self):
+        self.Output = ""
+        self.TrainingCheckpoints = ""
+        self.Epochs = 0
+        self.BatchSize = 0
+        self.BufferSize = 0
+        self.NoiseDim = 0
+        self.NumExamplesToGenerate = 0

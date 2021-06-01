@@ -1,15 +1,17 @@
 import glob2
 import imageio
+import os
 import tensorflow_docs.vis.embed as embed
 
 
 class GifGenerator:
 
     @staticmethod
-    def generateGif(outputFileName):
+    def generateGif(settings, outputFileName):
 
-        with imageio.get_writer(outputFileName, mode='I') as writer:
-            filenames = glob2.glob('image*.png')
+        file_path = os.path.join(settings.Output, outputFileName)
+        with imageio.get_writer(file_path, mode='I') as writer:
+            filenames = glob2.glob(os.path.join(settings.Output, 'image*.png'))
             filenames = sorted(filenames)
 
             for filename in filenames:
@@ -18,4 +20,4 @@ class GifGenerator:
             image = imageio.imread(filename)
             writer.append_data(image)
 
-        embed.embed_file(outputFileName)
+        embed.embed_file(file_path)
