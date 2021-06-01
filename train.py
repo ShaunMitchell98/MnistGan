@@ -1,9 +1,7 @@
 import tensorflow as tf
-import generator
-import discriminator
 import mnistImages
 import os
-import csvWriter
+from src import csvWriter, discriminator, generator
 import numpy as np
 
 from IPython import display
@@ -13,20 +11,21 @@ import time
 
 class Trainer:
 
-    def __init__(self):
+    def __init__(self, config):
         self.generator_optimizer = tf.keras.optimizers.Adam(1e-4)
         self.generatorModel = generator.Generator.make_model()
         self.discriminatorModel = discriminator.Discriminator.make_model()
         self.discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+        self.config = config
         self.checkpoint = tf.train.Checkpoint(generator_optimizer=self.generator_optimizer,
                                               discriminator_optimizer=self.discriminator_optimizer,
                                               generator=self.generatorModel,
                                               discriminator=self.discriminatorModel)
-        self.checkpoint_dir = './training_checkpoints'
+        self.checkpoint_dir = '../training_checkpoints'
         self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
-        self.generatorCsvWriter = csvWriter.CsvWriter('Generator Training Losses.csv')
+        self.generatorCsvWriter = csvWriter.CsvWriter(config, 'Generator Training Losses.csv')
         self.generatorCsvWriter.write_headers(['Epoch', 'Average Loss'])
-        self.discriminatorCsvWriter = csvWriter.CsvWriter('Discriminator Training Losses.csv')
+        self.discriminatorCsvWriter = csvWriter.CsvWriter(config, 'Discriminator Training Losses.csv')
         self.discriminatorCsvWriter.write_headers(['Epoch', 'Average Loss'])
 
     @tf.function
@@ -74,13 +73,13 @@ class Trainer:
 
             print('Time for epoch {} is {} sec'.format(epoch + 1, time.time() - start))
             display.clear_output(wait=True)
-            mnistImages.generate_and_save_images(self.generatorModel, epoch, seed, False)
+            mnistImages.generate_and_save_images(self.generatorModel, self.config, epoch, seed, False)
             self.generatorCsvWriter.write_stats([epoch, np.average(epoch_generator_losses)])
             self.discriminatorCsvWriter.write_stats([epoch, np.average(epoch_discriminator_losses)])
 
         # Generate after the final epoch
         display.clear_output(wait=True)
-        mnistImages.generate_and_save_images(self.generatorModel, epoch, seed, True)
+        mnistImages.generate_and_save_images(self.generatorModel, self.config, epoch, seed, True)
 
     def restore(self):
         self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))

@@ -2,8 +2,11 @@ import tensorflow as tf
 from train import Trainer
 import mnistImages
 import modelSettings
-import gifGenerator
-import csvWriter
+from src import csvWriter, gifGenerator
+import json
+
+with open("config.json") as json_config_file:
+    config = json.load(json_config_file)
 
 (train_images, train_labels), (_, _) = tf.keras.datasets.mnist.load_data()
 
@@ -19,15 +22,15 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images)\
 
 noise = tf.random.normal([1, 100])
 
-trainer = Trainer()
+trainer = Trainer(config)
 trainer.train(train_dataset, modelSettings.epochs, modelSettings.batchSize,
               modelSettings.noiseDim, modelSettings.numExamplesToGenerate)
 
 trainer.restore()
 
-mnistImages.display_image(modelSettings.epochs-1)
+mnistImages.display_image(modelSettings.epochs - 1, config)
 gifGenerator.GifGenerator.generateGif('dcgan.gif')
 header = ['Epochs', 'Batch Size', 'Buffer Size', 'Noise Dim', 'Num Examples To Generate']
-csvWriter = csvWriter.CsvWriter('dcgan_stats.csv')
+csvWriter = csvWriter.CsvWriter(config, '../output/dcgan_stats.csv')
 csvWriter.write_headers(header)
 csvWriter.write_stats([modelSettings.epochs, modelSettings.batchSize, modelSettings.bufferSize, modelSettings.noiseDim, modelSettings.numExamplesToGenerate])
